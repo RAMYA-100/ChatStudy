@@ -73,70 +73,78 @@ Client-server chat applications are versatile tools that facilitate real-time co
 
 Client-server chat applications are foundational to real-time communication over networks. They incorporate principles of socket programming, communication protocols, and security mechanisms to provide a seamless user experience. Understanding the basics of client-server chat applications is essential for developers involved in networked application development, as they form the backbone of various collaborative communication systems. As technology evolves, chat applications continue to adapt, incorporating new features and technologies to enhance user interaction and connectivity.
 
-##program:
-'''python
-/*
-CLIENT.PY
-
+## program:
+server.py
+~~~
 import socket
 
-client = socket.socket()
-client.connect(('127.0.0.1', 12345))
+s = socket.socket()
 
-print("Connected to server")
+host = "127.0.0.1"
+port = 8080
 
-while True:
-    message = input("Client: ")
-    client.send(message.encode())
+print("Server will start on host:", host)
 
-    if message.lower() == 'exit':
-        break
+s.bind((host, port))
+s.listen(1)
 
-    reply = client.recv(1024).decode()
-    print("Server:", reply)
-
-    if reply.lower() == 'exit':
-        break
-
-client.close()
-'''python
-'''python
-SERVER.PY
-
-import socket
-
-server = socket.socket()
-server.bind(('127.0.0.1', 12345))
-server.listen(1)
-
+print()
 print("Waiting for connection...")
+print()
 
-conn, addr = server.accept()
-print("Connected to", addr)
+conn, addr = s.accept()
+print(addr, "has connected to the server")
+print()
 
 while True:
-    message = conn.recv(1024).decode()
+    message = input(">> ")
+    conn.send(message.encode())
+    print("Sent")
+    print()
 
-    if message.lower() == 'exit':
-        print("Client disconnected")
+    if message.lower() == "bye":
         break
 
-    print("Client:", message)
+    incoming_message = conn.recv(1024).decode()
+    print("Client:", incoming_message)
+    print()
 
-    reply = input("Server: ")
-    conn.send(reply.encode())
-
-    if reply.lower() == 'exit':
+    if incoming_message.lower() == "bye":
         break
 
 conn.close()
-server.close()
-*/
-'''python
+s.close()
+~~~
+client.py
+~~~
+import socket
 
+s = socket.socket()
+
+host = input("Enter hostname or host IP: ")
+port = 8080
+
+s.connect((host, port))
+print("Connected to chat server")
+
+while True:
+    incoming_message = s.recv(1024).decode()
+    print("Server:", incoming_message)
+    print()
+
+    message = input(">> ")
+    s.send(message.encode())
+    print("Sent")
+    print()
+
+    if message.lower() == "bye":
+        break
+
+s.close()
+~~~       
 ##output:
-<img width="947" height="388" alt="Screenshot 2026-05-13 152014" src="https://github.com/user-attachments/assets/e0e50e9e-6b56-4937-91f7-5ec7826c33dc" />
-<img width="952" height="380" alt="Screenshot 2026-05-13 152020" src="https://github.com/user-attachments/assets/c70ed159-d92a-4c40-b0c2-33a0764e3c70" />
+<img width="1612" height="861" alt="image" src="https://github.com/user-attachments/assets/b3190be3-94ab-4c19-94e0-950db26e979a" />
+
 
 ## Result:
 
